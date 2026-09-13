@@ -1,0 +1,317 @@
+# =============================================================================
+#  ServerCore - main configuration
+# =============================================================================
+#  Every value here is a DEFAULT, not a balanced recommendation. Economy numbers
+#  in particular must be calibrated against your own server's income rates
+#  before you rely on them. See docs/ECONOMY.md.
+#
+#  Text is MiniMessage markup: https://docs.advntr.dev/minimessage/format.html
+# =============================================================================
+
+database:
+  # File name inside the plugin's data folder.
+  file: servercore.db
+
+  # Concurrent connections. SQLite serialises writes regardless, so this mainly
+  # governs how many reads can run at once. Raising it past ~16 rarely helps.
+  pool-size: 8
+
+  # How long a query waits for the write lock before failing, in milliseconds.
+  busy-timeout-millis: 5000
+
+logging:
+  # How often queued audit entries are written, in ticks (20 ticks = 1 second).
+  # Lower means less is lost in a hard crash; higher means fewer writes.
+  audit-flush-interval-ticks: 100
+
+  # Also print every audit entry to the server console. Useful while testing,
+  # very noisy in production.
+  mirror-audit-to-server-log: false
+
+gui:
+  # How long a chat-input prompt (search, naming) waits before giving up,
+  # in ticks. 1200 ticks = 60 seconds.
+  chat-input-timeout-ticks: 1200
+
+notifications:
+  sounds-enabled: true
+
+  # Format: <namespace:sound>|<volume>|<pitch>
+  # Volume and pitch are optional and default to 1.0.
+  # An unrecognised sound name is ignored rather than causing an error, so these
+  # are safe to edit.
+  sounds:
+    success: "minecraft:entity.experience_orb.pickup|0.7|1.4"
+    error: "minecraft:block.note_block.bass|0.7|0.8"
+    notification: "minecraft:block.note_block.bell|0.6|1.6"
+
+# =============================================================================
+#  Economy
+# =============================================================================
+#  Amounts below are written in whole currency, exactly as a player would see
+#  them. They are converted to integer minor units on load, so "4.50" is exact
+#  and can never drift.
+#
+#  These figures are DEFAULTS, not balanced values. Calibrate them against your
+#  own server's income rates before relying on them -- see docs/ECONOMY.md.
+# =============================================================================
+economy:
+  currency:
+    symbol: "$"
+    # Decimal places. 2 gives cents; 0 gives whole-number currency.
+    fraction-digits: 2
+    symbol-before-amount: true
+    group-digits: true
+
+  # Granted once, on first join. Raising this later does not top up existing
+  # players.
+  starting-balance: 100
+
+  # Bounds on a single /pay.
+  minimum-payment: 1
+  maximum-payment: 1000000
+
+  # Ceiling on any one account. Enforced in the same statement as the credit, so
+  # concurrent deposits cannot jointly exceed it.
+  max-balance: 1000000000
+
+  # Time a player must wait between payments. Use 0 for none.
+  payment-cooldown: 0
+
+  # Fee taken on top of a /pay, paid by the sender. The fee is destroyed rather
+  # than paid to anyone, making it a money sink. Percentage is 0-100.
+  transfer-fee-percent: 0
+  transfer-fee-flat: 0
+
+  # Payments at or above this open a confirmation dialog. Set to 0 to never
+  # confirm.
+  large-payment-confirm-threshold: 5000
+
+  # Entries shown per page in the transaction history GUI (9-45).
+  history-page-size: 45
+
+# =============================================================================
+#  Statistics
+# =============================================================================
+statistics:
+  # How often each online player's accumulated playtime is written. A crash
+  # costs at most this much of the current session, so lower is safer and
+  # higher is cheaper. Buffered counters (mob kills, and later block counts)
+  # are flushed on the same schedule.
+  playtime-flush-interval: 1m
+
+  # How long individual kills are kept for anti-farm checks. This is a sliding
+  # window, not a permanent history -- the kill counter itself is permanent.
+  kill-log-retention: 7d
+
+  combat:
+    # Refuse to count repeated kills of the same victim.
+    anti-farm-enabled: true
+
+    # Within this window, a killer may bank at most the number of kills below
+    # against any one victim. Further kills still happen and are still logged;
+    # they just do not increase the counter.
+    same-victim-window: 10m
+    max-kills-per-victim-in-window: 1
+
+    # Count mobs killed by players. Buffered in memory and flushed on the
+    # interval above, so a mob farm does not become a write storm.
+    count-mob-kills: true
+
+# =============================================================================
+#  Leaderboards
+# =============================================================================
+leaderboards:
+  # How often each placed board re-queries and redraws. Every refresh is one
+  # indexed query per board, run off the main thread.
+  update-interval: 60s
+
+  # How far away a board stays visible, in blocks-ish units. The client scales
+  # this by its own render distance, so treat it as a hint rather than a limit.
+  view-range: 4
+
+# =============================================================================
+#  Land claims
+# =============================================================================
+#  Claims are rectangular and full-height. Prices are per block of area, written
+#  in whole currency.
+#
+#  A 32x32 claim is 1024 blocks; at 0.20 per block that is 204.80. Work out the
+#  cost of the size you expect players to want before settling on a price.
+# =============================================================================
+claims:
+  enabled: true
+
+  # Cost per block of area for a new claim.
+  price-per-block: 0.20
+
+  # Cost per additional block when expanding an existing claim. Keep this at or
+  # above price-per-block: if expansion were cheaper, players would buy the
+  # smallest legal claim and expand it rather than buying the size they want.
+  expansion-price-per-block: 0.20
+
+  # Share of everything paid for a claim that is returned when it is deleted.
+  # 100 would make claiming free to try; 0 makes every claim permanent in effect.
+  delete-refund-percent: 50
+
+  # Bounds on a single claim's side length, in blocks.
+  min-side-length: 4
+  max-side-length: 256
+
+  # Hard ceiling on area, independent of side lengths. 65536 is 256x256.
+  max-area: 65536
+
+  # Claims one player may own. 0 for unlimited.
+  max-claims-per-player: 5
+
+  # How long a visualisation lasts.
+  visualise-seconds: 15
+
+  # Worlds where claiming is allowed. Empty means every world. Names are
+  # matched case-insensitively.
+  enabled-worlds: []
+
+# =============================================================================
+#  Player shops
+# =============================================================================
+player-shops:
+  enabled: true
+
+  # Charged once when a shop is opened. A fee here is what stops every player
+  # from planting a dozen empty stalls across spawn.
+  creation-fee: 500
+
+  # Shops one player may own. 0 for unlimited.
+  max-shops-per-owner: 3
+
+  # Distinct items one shop may list.
+  max-offers-per-shop: 14
+
+  # Extra offer slots for shops on a premium spawn plot. This is one of the
+  # concrete advantages a plot buys -- a real benefit that still does not
+  # guarantee anyone walks in.
+  spawn-plot-offer-bonus: 14
+
+  # Ceiling on a single offer's stock. 2304 is 36 full stacks.
+  max-stock-per-offer: 2304
+
+  # Ceiling on any single item price, as a guard against typos.
+  max-item-price: 1000000
+
+  # Require shops to sit inside the owner's own claim. Strongly recommended: a
+  # shop on unclaimed ground can be broken by anyone, stranding its stock.
+  require-protected-location: true
+
+# =============================================================================
+#  Premium spawn plots
+# =============================================================================
+#  The progression milestone. A plot costs money once and then keeps costing
+#  money, which is what makes owning one mean something.
+#
+#  THESE NUMBERS ARE DEFAULTS, NOT BALANCED VALUES. Calibrate them against your
+#  own server's income rates -- a plot should take weeks of play to afford, and
+#  the rent should be payable from an active shop's takings. See docs/ECONOMY.md.
+# =============================================================================
+spawn-plots:
+  enabled: true
+
+  # Applied to new plots when no explicit price is given.
+  default-purchase-price: 25000
+  default-rent-price: 5000
+  default-rent-period: weekly   # daily, weekly or monthly
+
+  # How long after a missed payment before shops on the plot close. The shop
+  # keeps trading during this window and the owner is warned.
+  #
+  # Must be SHORTER than the rent period, or a tenant could stay permanently
+  # overdue and never lose the plot. The server refuses to start otherwise.
+  grace-period: 48h
+
+  # How long an expired plot is held before it goes back on the market. The
+  # owner can still pay and recover it during this window; their stock is
+  # already safe in the recovery mailbox either way.
+  cleanup-period: 7d
+
+  # How often rent is checked. Due dates are absolute timestamps, so a long
+  # interval delays collection but never loses it.
+  rent-check-interval: 15m
+
+  # Plots one player may hold. 0 for unlimited.
+  max-plots-per-player: 1
+
+  # Warn owners at login about rent due, grace periods and waiting stock.
+  warn-on-login: true
+  warn-before-due: 24h
+
+# =============================================================================
+#  Auction house
+# =============================================================================
+#  Fixed-price listings. Money and the item never move in the same transaction,
+#  so a bought item is placed in the buyer's collection rather than refunded on
+#  failure -- see docs/ARCHITECTURE.md.
+# =============================================================================
+auction:
+  enabled: true
+
+  # Charged when a listing is created, whether or not it sells. This is what
+  # discourages speculative listings at absurd prices. Both parts are added
+  # together; either may be zero.
+  listing-fee-flat: 0
+  listing-fee-percent: 2
+
+  # Deducted from the seller's proceeds when an item sells. The buyer pays the
+  # full asking price; the difference leaves circulation, making this a sink.
+  sales-tax-percent: 5
+
+  # How long a listing stays on sale before returning to its seller.
+  listing-duration: 2d
+
+  # Active listings one player may have at a time.
+  max-listings-per-player: 7
+
+  # Bounds on an asking price, as a guard against typos.
+  minimum-price: 1
+  maximum-price: 10000000
+
+  # How often expired listings are swept up.
+  sweep-interval: 5m
+
+  # How long a fully collected listing is kept for history before deletion.
+  # Nothing uncollected is ever removed, regardless of age.
+  purge-settled-after: 30d
+
+  # Whether a player may buy their own listing. Off by default: it achieves
+  # nothing except burning the listing fee.
+  allow-buying-own-listings: false
+
+# =============================================================================
+#  Teleport requests
+# =============================================================================
+tpa:
+  enabled: true
+
+  # How long a request waits before it lapses.
+  request-expiry: 60s
+
+  # How long after a completed teleport before a player may request another.
+  cooldown: 30s
+
+  # Delay between accepting and actually teleporting. Without one, /tpa is an
+  # instant escape from combat -- which is why this and the two cancel options
+  # below are on by default. Set to 0 for no warm-up.
+  warm-up: 5s
+  cancel-on-move: true
+  cancel-on-damage: true
+
+  # How far a player may drift during the warm-up before it counts as moving.
+  # Standing still still produces sub-block jitter from boats, mounts and
+  # pistons, so zero would make the warm-up impossible to finish.
+  move-tolerance: 0.5
+
+  # Refuse to teleport into lava, fire, a suffocating block, or a long drop.
+  # Not a guarantee of safety -- a mob can still be waiting -- but it rules out
+  # the deaths the teleport itself would have caused.
+  require-safe-destination: true
+
+  # How many requests one player may have waiting for them at once.
+  max-pending-per-player: 5

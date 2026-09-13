@@ -1,0 +1,226 @@
+# =============================================================================
+#  ServerCore - player-facing text
+# =============================================================================
+#  MiniMessage markup: https://docs.advntr.dev/minimessage/format.html
+#  Placeholders appear as <name> and are supplied by the plugin.
+#
+#  Adding or removing keys is safe; a key the plugin looks for but cannot find
+#  renders as a visible [missing message: key] marker rather than a blank line.
+# =============================================================================
+
+prefix: "<dark_gray>[<aqua>Server</aqua>]</dark_gray> "
+
+error:
+  no-permission: "<red>You do not have permission to do that.</red> <dark_gray>(<permission>)</dark_gray>"
+  player-only: "<red>That command can only be used by a player.</red>"
+  unknown-player: "<red>No player named <white><name></white> has been seen on this server.</red>"
+  invalid-amount: "<red><white><input></white> is not a valid amount.</red>"
+  internal: "<red>Something went wrong. The error has been logged and nothing was changed.</red>"
+
+notifications:
+  while-away: "<gray>You have <white><count></white> message(s) from while you were away:</gray>"
+
+admin:
+  reload-success: "<green>Configuration reloaded.</green>"
+  reload-failed: "<red>Reload failed: <white><reason></white></red> <gray>Previous settings are still active.</gray>"
+  status-header: "<gray><strikethrough>                    </strikethrough></gray> <aqua>ServerCore</aqua> <gray><strikethrough>                    </strikethrough></gray>"
+
+economy:
+  balance:
+    self: "<gray>Balance:</gray> <green><balance></green> <dark_gray>(rank #<rank> of <total>)</dark_gray>"
+    other: "<white><name></white><gray>'s balance:</gray> <green><balance></green> <dark_gray>(rank #<rank>)</dark_gray>"
+
+  pay:
+    usage: "<gray>Usage:</gray> <white>/pay [player] [amount]</white>"
+    sent: "<gray>You sent</gray> <green><amount></green> <gray>to</gray> <white><name></white><gray>.</gray> <dark_gray>Balance: <balance></dark_gray>"
+    received: "<white><name></white> <gray>sent you</gray> <green><amount></green><gray>.</gray>"
+    cancelled: "<gray>Payment cancelled. Nothing was sent.</gray>"
+
+  error:
+    insufficient-funds: "<red>You need</red> <white><needed></white> <red>more.</red> <dark_gray>Balance: <balance></dark_gray>"
+    invalid-amount: "<red>That is not a valid amount.</red>"
+    below-minimum: "<red>The smallest payment is</red> <white><minimum></white><red>.</red>"
+    above-maximum: "<red>The largest payment is</red> <white><maximum></white><red>.</red>"
+    cooldown: "<red>You must wait</red> <white><remaining></white> <red>before paying again.</red>"
+    self-payment: "<red>You cannot pay yourself.</red>"
+    offline-payment: "<red><name> is offline, and offline payments are disabled.</red>"
+    max-balance: "<red><name> cannot hold that much money.</red>"
+
+  admin:
+    applied: "<green>Done.</green> <gray><action></gray> <white><amount></white> <gray>for</gray> <white><name></white><gray>.</gray> <dark_gray>New balance: <balance></dark_gray>"
+    insufficient: "<red><name> does not have that much.</red> <dark_gray>Balance: <balance></dark_gray>"
+    notified: "<gray>An administrator adjusted your balance. It is now</gray> <green><balance></green><gray>.</gray>"
+
+shop:
+  buy-success: "<gray>Bought</gray> <white><quantity>x <item></white> <gray>for</gray> <red><amount></red><gray>.</gray> <dark_gray>Balance: <balance></dark_gray>"
+  sell-success: "<gray>Sold</gray> <white><quantity>x <item></white> <gray>for</gray> <green><amount></green><gray>.</gray> <dark_gray>Balance: <balance></dark_gray>"
+  error:
+    empty: "<red>The server shop has no items configured.</red>"
+    unknown-category: "<red>There is no shop category called <white><name></white>.</red>"
+    insufficient-funds: "<red>You need</red> <white><needed></white> <red>more.</red> <dark_gray>Balance: <balance></dark_gray>"
+    not-enough-items: "<red>You do not have enough of that item.</red> <dark_gray>Damaged or enchanted copies do not count.</dark_gray>"
+    inventory-full: "<red>You do not have room for that.</red>"
+    not-sellable: "<red>The shop does not buy that item.</red>"
+    not-buyable: "<red>The shop does not sell that item.</red>"
+    invalid-quantity: "<red>That quantity is not allowed.</red>"
+    unknown-item: "<red>That item is not in the shop.</red>"
+    refunded: "<yellow>The transaction could not be completed, so nothing was changed.</yellow>"
+
+leaderboard:
+  created: "<green>Created leaderboard</green> <white><name></white> <gray>(<stat>)</gray>"
+  removed: "<green>Removed leaderboard</green> <white><name></white>"
+  refreshed: "<green>All leaderboards refreshed.</green>"
+  error:
+    unknown-stat: "<red>Unknown statistic <white><name></white>.</red> <gray>Try: <options></gray>"
+    id-taken: "<red>A leaderboard called <white><name></white> already exists.</red>"
+    not-found: "<red>No leaderboard called <white><name></white>.</red>"
+    bad-id: "<red><name> is not a valid id.</red> <gray>Use lowercase letters, digits, _ or -.</gray>"
+    bad-size: "<red>Size must be between <min> and <max>.</red>"
+
+claim:
+  created: "<green>Claim created:</green> <white><name></white> <gray>(<size>)</gray> <dark_gray>Cost: <cost></dark_gray>"
+  resized: "<green>Claim resized to</green> <white><size></white><gray>.</gray> <dark_gray>Cost: <cost></dark_gray>"
+  renamed: "<green>Claim renamed to</green> <white><name></white><gray>.</gray>"
+  deleted: "<green>Claim <white><name></white> deleted.</green> <dark_gray>Refunded: <refund></dark_gray>"
+  trusted: "<green>Trusted</green> <white><name></white> <gray>with</gray> <aqua><level></aqua><gray>.</gray>"
+  untrusted: "<green>Removed</green> <white><name></white> <gray>from this claim.</gray>"
+  cancelled: "<gray>Cancelled. Nothing was changed.</gray>"
+  no-claim-here: "<gray>You are not standing in a claim.</gray>"
+  list-empty: "<gray>You do not own any claims. Try <white>/claim 16</white>.</gray>"
+  error:
+    protected: "<red>You cannot <action> here.</red> <dark_gray>This land belongs to <owner>.</dark_gray>"
+    disabled: "<red>Claiming is not available here.</red>"
+    overlaps: "<red>That would overlap an existing claim.</red>"
+    too-small: "<red>Claims must be at least <min> blocks on each side.</red>"
+    too-large: "<red>Claims may be at most <max> blocks on each side.</red>"
+    too-many: "<red>You already own the maximum of <limit> claims.</red>"
+    insufficient-funds: "<red>You need</red> <white><needed></white> <red>more.</red> <dark_gray>Cost: <cost></dark_gray>"
+    not-found: "<red>That claim no longer exists.</red>"
+    not-permitted: "<red>You do not have permission to do that here.</red>"
+    invalid-name: "<red>That name is not usable.</red> <gray>Use 1-32 characters.</gray>"
+    no-change: "<gray>That would not change anything.</gray>"
+    bad-trust: "<red>Unknown trust level <white><name></white>.</red> <gray>Use access, container, build or manage.</gray>"
+
+playershop:
+  created: "<green>Shop opened:</green> <white><name></white> <dark_gray>Fee: <cost></dark_gray>"
+  deleted: "<green>Shop <white><name></white> closed.</green>"
+  renamed: "<green>Shop renamed to</green> <white><name></white><gray>.</gray>"
+  bought: "<gray>Bought</gray> <white><quantity>x <item></white> <gray>for</gray> <red><amount></red><gray>.</gray>"
+  sold: "<gray>Sold</gray> <white><quantity>x <item></white> <gray>for</gray> <green><amount></green><gray>.</gray>"
+  stock-added: "<green>Added <white><quantity></white> to stock.</green>"
+  stock-withdrawn: "<green>Took <white><quantity></white> back.</green>"
+  offer-updated: "<green>Updated prices for</green> <white><item></white><gray>.</gray>"
+  offer-removed: "<green>Stopped trading</green> <white><item></white><gray>.</gray>"
+  status-changed: "<green>Shop status updated.</green>"
+  cancelled: "<gray>Cancelled. Nothing was changed.</gray>"
+  list-empty: "<gray>You do not own any shops. Try <white>/pshop create [name]</white>.</gray>"
+  error:
+    not-found: "<red>That shop no longer exists.</red>"
+    not-permitted: "<red>That is not your shop.</red>"
+    not-trading: "<red>This shop is not currently trading.</red>"
+    no-offer: "<red>This shop does not trade that item.</red>"
+    out-of-stock: "<red>Out of stock.</red>"
+    insufficient-funds: "<red>You cannot afford that.</red> <dark_gray>Balance: <balance></dark_gray>"
+    owner-cannot-pay: "<red>The shop owner cannot afford to buy that right now.</red>"
+    not-enough-items: "<red>You do not have enough of that item.</red> <dark_gray>Damaged or enchanted copies do not count.</dark_gray>"
+    inventory-full: "<red>You do not have room for that.</red>"
+    invalid-quantity: "<red>That quantity is not allowed.</red>"
+    invalid-price: "<red>That price is not allowed.</red> <gray>A shop may not pay more than it charges.</gray>"
+    invalid-name: "<red>That name is not usable.</red> <gray>Use 1-32 characters.</gray>"
+    too-many: "<red>You already own the maximum of <limit> shops.</red>"
+    unprotected: "<red>A shop must be inside your own claim.</red> <gray>Claim the land first with <white>/claim 16</white>.</gray>"
+    location-taken: "<red>There is already a shop on that block.</red>"
+    stock-remaining: "<red>Collect your stock before closing the shop.</red>"
+    refunded: "<yellow>The trade could not be completed, so nothing was changed.</yellow>"
+    no-shop-here: "<red>You are not looking at a shop.</red>"
+    no-target-block: "<red>Look at the block customers should click, then run the command.</red>"
+    block-protected: "<red>Close the shop with <white>/pshop delete</white> before breaking this block.</red>"
+    hold-an-item: "<red>Hold the item you want to trade, then click.</red>"
+    already-listed: "<red><item> is already listed in this shop.</red>"
+
+plot:
+  created: "<green>Created plot</green> <white><plot></white> <gray>(<size>)</gray> <dark_gray><cost>, rent <rent></dark_gray>"
+  removed: "<green>Removed plot</green> <white><plot></white>"
+  purchased: "<green>You now own plot</green> <white><plot></white><gray>.</gray> <dark_gray>Paid <cost>; rent <rent></dark_gray>"
+  pricing-updated: "<green>Plot <white><plot></white> updated.</green> <dark_gray><cost>, rent <rent></dark_gray>"
+  status-updated: "<green>Plot <white><plot></white> is now <white><status></white>.</green>"
+  sweep-started: "<green>Rent sweep running.</green>"
+  sweep-finished: "<green>Rent sweep finished.</green>"
+  cancelled: "<gray>Cancelled. Nothing was changed.</gray>"
+  list-empty: "<gray>You do not own any spawn plots. Try <white>/plot district</white>.</gray>"
+  rent-paid: "<green>Rent paid for plot <white><plot></white>:</green> <white><amount></white>"
+  rent-overdue: "<red>Rent of <white><amount></white> for plot <white><plot></white> could not be collected.</red> <gray>Your shop stays open for <white><grace></white>.</gray>"
+  rent-reminder: "<gold>Plot <white><plot></white> still owes <white><amount></white>.</gold> <gray><grace> remaining.</gray>"
+  expired: "<red>Plot <white><plot></white> has expired and your shop is closed.</red> <gray><stacks> stack(s) are waiting in <white>/plot mail</white>. The plot is held for <white><cleanup></white>.</gray>"
+  released: "<red>Plot <white><plot></white> has been released and is available to others.</red>"
+  login-overdue: "<red>Plot <white><plot></white> owes <white><amount></white>.</red> <gray>Shop closes in <white><grace></white> - pay with <white>/plot pay <plot></white>.</gray>"
+  login-due-soon: "<gold>Rent of <white><amount></white> for plot <white><plot></white> is due in <white><remaining></white>.</gold>"
+  login-expired: "<red>Plot <white><plot></white> has expired.</red> <gray>Pay the rent to recover it.</gray>"
+  mail-waiting: "<gold>You have <white><count></white> batch(es) of recovered stock.</gold> <gray>Collect with <white>/plot mail</white>.</gray>"
+  mail-collected: "<green>Collected your stock from plot <white><plot></white>.</green>"
+  mail-dropped: "<yellow><count> stack(s) would not fit and were dropped at your feet.</yellow>"
+  mail-already-collected: "<gray>That has already been collected.</gray>"
+  error:
+    disabled: "<red>Spawn plots are not available.</red>"
+    not-found: "<red>There is no plot called <white><name></white>.</red>"
+    not-permitted: "<red>That is not your plot.</red>"
+    not-available: "<red>That plot is not for sale.</red>"
+    insufficient-funds: "<red>You need</red> <white><needed></white> <red>more.</red> <dark_gray>Price: <cost></dark_gray>"
+    too-many: "<red>You already hold the maximum of <limit> plot(s).</red>"
+    overlaps: "<red>Those bounds overlap an existing plot.</red>"
+    nothing-due: "<gray>There is nothing to pay right now.</gray>"
+    invalid-id: "<red>That plot id is unusable or already taken.</red>"
+    bad-period: "<red>Unknown period <white><name></white>.</red> <gray>Use daily, weekly or monthly.</gray>"
+    bad-status: "<red>Unknown status <white><name></white>.</red>"
+    mail-unreadable: "<red>That stored stock could not be read. Please contact an administrator.</red>"
+
+auction:
+  listed: "<green>Listed</green> <white><item></white> <gray>for</gray> <yellow><price></yellow><gray>.</gray> <dark_gray>Fee: <fee></dark_gray>"
+  bought: "<gray>Bought</gray> <white><item></white> <gray>for</gray> <red><amount></red><gray>.</gray>"
+  sold: "<green>Your listing sold!</green> <white><item></white> <gray>earned you</gray> <green><amount></green><gray>.</gray> <dark_gray>Tax: <tax></dark_gray>"
+  collected: "<green>Collected</green> <white><item></white><gray>.</gray>"
+  cancelled: "<gray>Listing cancelled. The item is in your collection.</gray>"
+  removed: "<green>Listing <white><id></white> removed.</green>"
+  removed-by-admin: "<red>An administrator removed your listing of <white><item></white>.</red> <gray>Collect it with <white>/ah mine</white>.</gray>"
+  awaiting-collection: "<gold><item> is waiting in your collection.</gold> <gray>Use <white>/ah mine</white>.</gray>"
+  sweep-started: "<green>Auction sweep running.</green>"
+  sweep-finished: "<green>Auction sweep finished.</green>"
+  error:
+    disabled: "<red>The auction house is not available.</red>"
+    not-found: "<red>That listing no longer exists.</red>"
+    not-permitted: "<red>That is not yours.</red>"
+    gone: "<red>Somebody else bought that first.</red>"
+    insufficient-funds: "<red>You cannot afford that.</red> <dark_gray>Balance: <balance></dark_gray>"
+    cannot-afford-fee: "<red>You cannot afford the listing fee.</red>"
+    own-listing: "<red>You cannot buy your own listing.</red>"
+    no-item: "<red>Hold the item you want to sell.</red>"
+    invalid-price: "<red>That price is not allowed.</red> <gray>Between <min> and <max>.</gray>"
+    too-many: "<red>You already have the maximum of <limit> active listings.</red>"
+    inventory-full: "<red>Make room in your inventory first.</red> <gray>The item is safe in your collection.</gray>"
+    already-collected: "<gray>That has already been collected.</gray>"
+
+tpa:
+  sent: "<green>Request sent to</green> <white><name></white><gray>.</gray>"
+  received: "<white><name></white> <gray>wants to teleport to you.</gray> <green>/tpaccept</green> <dark_gray>or</dark_gray> <red>/tpdeny</red> <dark_gray>(<expiry>)</dark_gray>"
+  received-here: "<white><name></white> <gray>wants you to teleport to them.</gray> <green>/tpaccept</green> <dark_gray>or</dark_gray> <red>/tpdeny</red> <dark_gray>(<expiry>)</dark_gray>"
+  accepted: "<green>Accepted <white><name></white>'s request.</green>"
+  accepted-sender: "<white><name></white> <green>accepted your request.</green>"
+  denied: "<gray>Denied <white><name></white>'s request.</gray>"
+  denied-sender: "<white><name></white> <red>denied your request.</red>"
+  cancelled: "<gray>Withdrew your request to <white><name></white>.</gray>"
+  expired-sender: "<gray>Your teleport request lapsed.</gray>"
+  warmup-start: "<yellow>Teleporting in <white><seconds></white> seconds. Do not move.</yellow>"
+  teleported: "<green>Teleported to</green> <white><name></white><gray>.</gray>"
+  cancelled-moved: "<red>Teleport cancelled because you moved.</red>"
+  cancelled-damage: "<red>Teleport cancelled because you took damage.</red>"
+  cancelled-offline: "<red>Teleport cancelled because the other player left.</red>"
+  unsafe: "<red>That destination is not safe to teleport into.</red>"
+  error:
+    disabled: "<red>Teleport requests are not available.</red>"
+    self: "<red>You are already there.</red>"
+    already-pending: "<red>You already have a request waiting with that player.</red>"
+    too-many: "<red>That player has too many requests waiting.</red>"
+    no-request: "<red>You have no pending requests.</red>"
+    cooldown: "<red>You must wait <white><remaining></white> before teleporting again.</red>"
+    offline: "<red>That player is no longer online.</red>"
+    already-teleporting: "<red>A teleport is already in progress.</red>"

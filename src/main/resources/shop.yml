@@ -1,0 +1,183 @@
+# =============================================================================
+#  ServerCore - server shop catalogue
+# =============================================================================
+#  Prices are written in whole currency (what a player sees) and converted to
+#  integer minor units on load, so "4.50" is exact and never drifts.
+#
+#  RULES ENFORCED AT LOAD -- the server refuses to start if you break them:
+#    * sell-price may never exceed buy-price. Otherwise players buy an item and
+#      immediately resell it for profit, creating unlimited money.
+#    * Each material may appear in only one category. Sell lookups are by
+#      material, so a duplicate would make "what is this worth" ambiguous.
+#    * Every item needs at least one of buy-price or sell-price.
+#
+#  Omit buy-price to make an item sell-only; omit sell-price to make it
+#  buy-only. Tools, weapons and armour are buy-only by default: if they could be
+#  sold, cheap crafting would turn raw materials into a money loop.
+#
+#  Only undamaged, unenchanted, unrenamed items can be sold. An enchanted
+#  diamond pickaxe is not the item this list prices.
+#
+#  THESE PRICES ARE DEFAULTS, NOT BALANCED VALUES. The sell/buy ratio here is
+#  roughly 1:3, which makes the shop a net money sink. Calibrate against your
+#  own server's income rates -- see docs/ECONOMY.md.
+# =============================================================================
+
+categories:
+
+  blocks:
+    display-name: "<gray>Building Blocks</gray>"
+    icon: "minecraft:bricks"
+    items:
+      stone: { material: "minecraft:stone", buy-price: 1.50, sell-price: 0.40 }
+      cobblestone: { material: "minecraft:cobblestone", buy-price: 1.00, sell-price: 0.25 }
+      dirt: { material: "minecraft:dirt", buy-price: 0.80, sell-price: 0.15 }
+      sand: { material: "minecraft:sand", buy-price: 1.20, sell-price: 0.30 }
+      gravel: { material: "minecraft:gravel", buy-price: 1.20, sell-price: 0.30 }
+      oak_log: { material: "minecraft:oak_log", buy-price: 4.00, sell-price: 1.20 }
+      oak_planks: { material: "minecraft:oak_planks", buy-price: 1.20, sell-price: 0.30 }
+      glass: { material: "minecraft:glass", buy-price: 3.00, sell-price: 0.80 }
+      bricks: { material: "minecraft:bricks", buy-price: 8.00, sell-price: 2.00 }
+      obsidian: { material: "minecraft:obsidian", buy-price: 40.00, sell-price: 12.00 }
+
+  ores:
+    display-name: "<gold>Ores</gold>"
+    icon: "minecraft:iron_ore"
+    items:
+      coal: { material: "minecraft:coal", buy-price: 6.00, sell-price: 2.00 }
+      raw_iron: { material: "minecraft:raw_iron", buy-price: 14.00, sell-price: 4.50 }
+      raw_copper: { material: "minecraft:raw_copper", buy-price: 9.00, sell-price: 3.00 }
+      raw_gold: { material: "minecraft:raw_gold", buy-price: 26.00, sell-price: 8.00 }
+      redstone: { material: "minecraft:redstone", buy-price: 7.00, sell-price: 2.20 }
+      lapis_lazuli: { material: "minecraft:lapis_lazuli", buy-price: 12.00, sell-price: 4.00 }
+      quartz: { material: "minecraft:quartz", buy-price: 15.00, sell-price: 5.00 }
+
+  minerals:
+    display-name: "<aqua>Minerals</aqua>"
+    icon: "minecraft:diamond"
+    items:
+      iron_ingot: { material: "minecraft:iron_ingot", buy-price: 18.00, sell-price: 6.00 }
+      copper_ingot: { material: "minecraft:copper_ingot", buy-price: 11.00, sell-price: 3.50 }
+      gold_ingot: { material: "minecraft:gold_ingot", buy-price: 32.00, sell-price: 10.00 }
+      diamond: { material: "minecraft:diamond", buy-price: 180.00, sell-price: 60.00 }
+      emerald: { material: "minecraft:emerald", buy-price: 150.00, sell-price: 50.00 }
+      netherite_scrap: { material: "minecraft:netherite_scrap", buy-price: 900.00, sell-price: 300.00 }
+
+  food:
+    display-name: "<red>Food</red>"
+    icon: "minecraft:cooked_beef"
+    items:
+      bread: { material: "minecraft:bread", buy-price: 5.00, sell-price: 1.50 }
+      apple: { material: "minecraft:apple", buy-price: 6.00, sell-price: 2.00 }
+      cooked_beef: { material: "minecraft:cooked_beef", buy-price: 12.00, sell-price: 4.00 }
+      cooked_porkchop: { material: "minecraft:cooked_porkchop", buy-price: 12.00, sell-price: 4.00 }
+      cooked_chicken: { material: "minecraft:cooked_chicken", buy-price: 9.00, sell-price: 3.00 }
+      golden_apple: { material: "minecraft:golden_apple", buy-price: 320.00, sell-price: 100.00 }
+      cake: { material: "minecraft:cake", buy-price: 60.00, sell-price: 18.00 }
+
+  farming:
+    display-name: "<green>Farming</green>"
+    icon: "minecraft:wheat"
+    items:
+      wheat: { material: "minecraft:wheat", buy-price: 4.00, sell-price: 1.30 }
+      wheat_seeds: { material: "minecraft:wheat_seeds", buy-price: 1.50, sell-price: 0.40 }
+      carrot: { material: "minecraft:carrot", buy-price: 4.00, sell-price: 1.30 }
+      potato: { material: "minecraft:potato", buy-price: 4.00, sell-price: 1.30 }
+      beetroot: { material: "minecraft:beetroot", buy-price: 4.00, sell-price: 1.30 }
+      sugar_cane: { material: "minecraft:sugar_cane", buy-price: 5.00, sell-price: 1.60 }
+      bamboo: { material: "minecraft:bamboo", buy-price: 2.00, sell-price: 0.50 }
+      pumpkin: { material: "minecraft:pumpkin", buy-price: 8.00, sell-price: 2.50 }
+      melon: { material: "minecraft:melon", buy-price: 8.00, sell-price: 2.50 }
+      bone_meal: { material: "minecraft:bone_meal", buy-price: 3.00, sell-price: 0.90 }
+
+  mob_drops:
+    display-name: "<dark_purple>Mob Drops</dark_purple>"
+    icon: "minecraft:rotten_flesh"
+    items:
+      rotten_flesh: { material: "minecraft:rotten_flesh", buy-price: 2.00, sell-price: 0.60 }
+      bone: { material: "minecraft:bone", buy-price: 5.00, sell-price: 1.60 }
+      string: { material: "minecraft:string", buy-price: 6.00, sell-price: 2.00 }
+      spider_eye: { material: "minecraft:spider_eye", buy-price: 7.00, sell-price: 2.20 }
+      gunpowder: { material: "minecraft:gunpowder", buy-price: 20.00, sell-price: 6.50 }
+      ender_pearl: { material: "minecraft:ender_pearl", buy-price: 90.00, sell-price: 30.00 }
+      blaze_rod: { material: "minecraft:blaze_rod", buy-price: 110.00, sell-price: 35.00 }
+      slime_ball: { material: "minecraft:slime_ball", buy-price: 25.00, sell-price: 8.00 }
+      leather: { material: "minecraft:leather", buy-price: 14.00, sell-price: 4.50 }
+      feather: { material: "minecraft:feather", buy-price: 4.00, sell-price: 1.20 }
+
+  tools:
+    display-name: "<yellow>Tools</yellow>"
+    icon: "minecraft:iron_pickaxe"
+    items:
+      # Buy-only: a sellable tool plus cheap crafting is a money loop.
+      stone_pickaxe: { material: "minecraft:stone_pickaxe", buy-price: 40.00, max-buy-quantity: 16 }
+      iron_pickaxe: { material: "minecraft:iron_pickaxe", buy-price: 120.00, max-buy-quantity: 16 }
+      diamond_pickaxe: { material: "minecraft:diamond_pickaxe", buy-price: 700.00, max-buy-quantity: 8 }
+      iron_axe: { material: "minecraft:iron_axe", buy-price: 120.00, max-buy-quantity: 16 }
+      iron_shovel: { material: "minecraft:iron_shovel", buy-price: 60.00, max-buy-quantity: 16 }
+      shears: { material: "minecraft:shears", buy-price: 55.00, max-buy-quantity: 16 }
+      fishing_rod: { material: "minecraft:fishing_rod", buy-price: 70.00, max-buy-quantity: 16 }
+      flint_and_steel: { material: "minecraft:flint_and_steel", buy-price: 45.00, max-buy-quantity: 16 }
+
+  weapons:
+    display-name: "<dark_red>Weapons</dark_red>"
+    icon: "minecraft:iron_sword"
+    items:
+      stone_sword: { material: "minecraft:stone_sword", buy-price: 35.00, max-buy-quantity: 16 }
+      iron_sword: { material: "minecraft:iron_sword", buy-price: 100.00, max-buy-quantity: 16 }
+      diamond_sword: { material: "minecraft:diamond_sword", buy-price: 600.00, max-buy-quantity: 8 }
+      bow: { material: "minecraft:bow", buy-price: 90.00, max-buy-quantity: 16 }
+      arrow: { material: "minecraft:arrow", buy-price: 2.50, sell-price: 0.70 }
+      crossbow: { material: "minecraft:crossbow", buy-price: 140.00, max-buy-quantity: 16 }
+
+  armour:
+    display-name: "<blue>Armour</blue>"
+    icon: "minecraft:iron_chestplate"
+    items:
+      iron_helmet: { material: "minecraft:iron_helmet", buy-price: 110.00, max-buy-quantity: 8 }
+      iron_chestplate: { material: "minecraft:iron_chestplate", buy-price: 175.00, max-buy-quantity: 8 }
+      iron_leggings: { material: "minecraft:iron_leggings", buy-price: 150.00, max-buy-quantity: 8 }
+      iron_boots: { material: "minecraft:iron_boots", buy-price: 90.00, max-buy-quantity: 8 }
+      diamond_helmet: { material: "minecraft:diamond_helmet", buy-price: 900.00, max-buy-quantity: 4 }
+      diamond_chestplate: { material: "minecraft:diamond_chestplate", buy-price: 1450.00, max-buy-quantity: 4 }
+      shield: { material: "minecraft:shield", buy-price: 120.00, max-buy-quantity: 8 }
+
+  redstone:
+    display-name: "<red>Redstone</red>"
+    icon: "minecraft:redstone_torch"
+    items:
+      redstone_torch: { material: "minecraft:redstone_torch", buy-price: 10.00, sell-price: 3.00 }
+      repeater: { material: "minecraft:repeater", buy-price: 30.00, sell-price: 9.00 }
+      comparator: { material: "minecraft:comparator", buy-price: 35.00, sell-price: 10.00 }
+      piston: { material: "minecraft:piston", buy-price: 50.00, sell-price: 15.00 }
+      sticky_piston: { material: "minecraft:sticky_piston", buy-price: 75.00, sell-price: 22.00 }
+      observer: { material: "minecraft:observer", buy-price: 60.00, sell-price: 18.00 }
+      hopper: { material: "minecraft:hopper", buy-price: 110.00, sell-price: 35.00 }
+      dispenser: { material: "minecraft:dispenser", buy-price: 70.00, sell-price: 20.00 }
+      dropper: { material: "minecraft:dropper", buy-price: 45.00, sell-price: 13.00 }
+      lever: { material: "minecraft:lever", buy-price: 6.00, sell-price: 1.80 }
+
+  transportation:
+    display-name: "<light_purple>Transportation</light_purple>"
+    icon: "minecraft:minecart"
+    items:
+      rail: { material: "minecraft:rail", buy-price: 12.00, sell-price: 3.50 }
+      powered_rail: { material: "minecraft:powered_rail", buy-price: 45.00, sell-price: 14.00 }
+      detector_rail: { material: "minecraft:detector_rail", buy-price: 35.00, sell-price: 10.00 }
+      minecart: { material: "minecraft:minecart", buy-price: 95.00, sell-price: 30.00 }
+      saddle: { material: "minecraft:saddle", buy-price: 250.00, max-buy-quantity: 8 }
+
+  miscellaneous:
+    display-name: "<white>Miscellaneous</white>"
+    icon: "minecraft:chest"
+    items:
+      torch: { material: "minecraft:torch", buy-price: 2.00, sell-price: 0.60 }
+      ladder: { material: "minecraft:ladder", buy-price: 3.00, sell-price: 0.90 }
+      chest: { material: "minecraft:chest", buy-price: 20.00, sell-price: 6.00 }
+      furnace: { material: "minecraft:furnace", buy-price: 18.00, sell-price: 5.00 }
+      crafting_table: { material: "minecraft:crafting_table", buy-price: 15.00, sell-price: 4.50 }
+      bucket: { material: "minecraft:bucket", buy-price: 55.00, sell-price: 17.00 }
+      paper: { material: "minecraft:paper", buy-price: 4.00, sell-price: 1.20 }
+      book: { material: "minecraft:book", buy-price: 18.00, sell-price: 5.50 }
+      ink_sac: { material: "minecraft:ink_sac", buy-price: 9.00, sell-price: 2.80 }
+      name_tag: { material: "minecraft:name_tag", buy-price: 400.00, max-buy-quantity: 8 }

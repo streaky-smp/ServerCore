@@ -1,0 +1,111 @@
+name: ServerCore
+version: '${version}'
+main: com.servercore.ServerCorePlugin
+api-version: '${apiVersion}'
+description: Modular server framework - economy, shops, claims, auctions, crossplay.
+authors: [ServerCore]
+
+# Downloaded by Paper's library loader at startup, not shaded into the jar.
+libraries:
+  - org.xerial:sqlite-jdbc:${sqliteVersion}
+  - com.zaxxer:HikariCP:${hikariVersion}
+  - com.github.ben-manes.caffeine:caffeine:${caffeineVersion}
+
+# All integrations are OPTIONAL. The plugin loads and runs fully without them.
+softdepend:
+  - Geyser-Spigot
+  - floodgate
+  - LuckPerms
+  - Vault
+  - PlaceholderAPI
+
+# Commands are registered through Paper's Brigadier lifecycle (see
+# ServerCorePlugin#registerCommands), not declared here, so they get real
+# argument parsing and tab-completion.
+
+permissions:
+  server.admin:
+    description: Full administrative access. Implies every admin node below.
+    default: op
+    children:
+      server.economy.admin: true
+      server.shop.admin: true
+      server.auction.admin: true
+      server.claim.admin: true
+      server.playershop.admin: true
+      server.plot.admin: true
+      server.tpa.admin: true
+      server.leaderboard.admin: true
+      server.economy.balance.others: true
+
+  server.menu.use:
+    description: Open the main menu.
+    default: true
+
+  server.economy.balance:
+    description: Check your own balance.
+    default: true
+  server.economy.balance.others:
+    description: Check another player's balance.
+    default: op
+  server.economy.pay:
+    description: Send money to another player.
+    default: true
+  server.economy.admin:
+    description: Modify balances and inspect transactions.
+    default: op
+
+  server.shop.use:
+    description: Use the server shop.
+    default: true
+  server.shop.admin:
+    description: Manage the server shop catalogue.
+    default: op
+
+  server.auction.use:
+    description: Browse and buy from the auction house.
+    default: true
+  server.auction.create:
+    description: Create auction listings.
+    default: true
+  server.auction.admin:
+    description: Remove and refund any listing.
+    default: op
+
+  server.claim.create:
+    description: Create land claims.
+    default: true
+  server.claim.expand:
+    description: Expand owned claims.
+    default: true
+  server.claim.admin:
+    description: Manage any claim regardless of owner.
+    default: op
+
+  server.playershop.create:
+    description: Create a player shop.
+    default: true
+  server.playershop.admin:
+    description: Manage any player shop.
+    default: op
+
+  server.plot.purchase:
+    description: Purchase a premium spawn plot.
+    default: true
+  server.plot.admin:
+    description: Create and configure spawn plots.
+    default: op
+
+  server.tpa.use:
+    description: Send and answer teleport requests.
+    default: true
+  server.tpa.admin:
+    description: Teleport without restriction.
+    default: op
+
+  server.stats.view:
+    description: View player statistics and leaderboards.
+    default: true
+  server.leaderboard.admin:
+    description: Create and manage physical leaderboards.
+    default: op
