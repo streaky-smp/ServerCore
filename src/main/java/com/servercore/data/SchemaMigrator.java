@@ -62,7 +62,7 @@ public final class SchemaMigrator {
         }
 
         if (current == target) {
-            logger.info("Database schema up to date (version " + current + ")");
+            logger.log(Level.FINE, "Database schema up to date (version {0})", current);
             return 0;
         }
 
@@ -74,8 +74,8 @@ public final class SchemaMigrator {
             applyMigration(migration);
             applied++;
         }
-        logger.info("Database schema migrated from version " + current + " to " + target
-                + " (" + applied + " migration" + (applied == 1 ? "" : "s") + " applied)");
+        logger.log(Level.FINE, "Database schema migrated from version {0} to {1} ({2} migration{3} applied)",
+                new Object[]{current, target, applied, applied == 1 ? "" : "s"});
         return applied;
     }
 
