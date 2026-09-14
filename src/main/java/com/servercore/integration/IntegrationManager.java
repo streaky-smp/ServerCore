@@ -38,9 +38,6 @@ public final class IntegrationManager implements Service {
 
     private boolean geyser;
     private boolean floodgate;
-    private boolean luckPerms;
-    private boolean vault;
-    private boolean placeholderApi;
 
     /** Resolved once at startup; null when Floodgate is absent or incompatible. */
     private Object floodgateApiInstance;
@@ -55,9 +52,6 @@ public final class IntegrationManager implements Service {
         // Geyser's Spigot plugin has been published under more than one name.
         geyser = isEnabled("Geyser-Spigot") || isEnabled("Geyser");
         floodgate = isEnabled("floodgate") || isEnabled("Floodgate");
-        luckPerms = isEnabled("LuckPerms");
-        vault = isEnabled("Vault");
-        placeholderApi = isEnabled("PlaceholderAPI");
 
         if (floodgate) {
             bindFloodgateApi();
@@ -95,9 +89,6 @@ public final class IntegrationManager implements Service {
         Map<String, Boolean> detected = new LinkedHashMap<>();
         detected.put("Geyser", geyser);
         detected.put("Floodgate", floodgate);
-        detected.put("LuckPerms", luckPerms);
-        detected.put("Vault", vault);
-        detected.put("PlaceholderAPI", placeholderApi);
 
         StringBuilder present = new StringBuilder();
         StringBuilder absent = new StringBuilder();
@@ -164,15 +155,4 @@ public final class IntegrationManager implements Service {
         return isFloodgatePlayerMethod != null;
     }
 
-    public boolean hasLuckPerms() {
-        return luckPerms;
-    }
-
-    public boolean hasVault() {
-        return vault;
-    }
-
-    public boolean hasPlaceholderApi() {
-        return placeholderApi;
-    }
 }

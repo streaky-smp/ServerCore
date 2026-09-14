@@ -80,9 +80,6 @@ All optional. The plugin runs fully without any of them.
 | Plugin | Adds |
 |---|---|
 | Geyser / Floodgate | Bedrock client support |
-| LuckPerms | Group/prefix data |
-| Vault | Economy bridge for other plugins |
-| PlaceholderAPI | Placeholders in other plugins |
 
 ## Versioning
 

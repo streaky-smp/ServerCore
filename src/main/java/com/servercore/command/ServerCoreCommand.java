@@ -143,9 +143,7 @@ public final class ServerCoreCommand implements BasicCommand {
             sender.sendMessage(Text.mm(
                     "  <yellow>Floodgate API unavailable; using UUID-based Bedrock detection.</yellow>"));
         }
-        integration(sender, "LuckPerms", integrations.hasLuckPerms());
-        integration(sender, "Vault", integrations.hasVault());
-        integration(sender, "PlaceholderAPI", integrations.hasPlaceholderApi());
+
 
         if (sender instanceof Player player) {
             line(sender, "Your platform",

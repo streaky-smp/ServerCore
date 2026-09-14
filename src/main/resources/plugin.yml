@@ -15,9 +15,6 @@ libraries:
 softdepend:
   - Geyser-Spigot
   - floodgate
-  - LuckPerms
-  - Vault
-  - PlaceholderAPI
 
 # Commands are registered through Paper's Brigadier lifecycle (see
 # ServerCorePlugin#registerCommands), not declared here, so they get real

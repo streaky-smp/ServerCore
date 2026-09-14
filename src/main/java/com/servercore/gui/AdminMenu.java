@@ -299,9 +299,7 @@ public final class AdminMenu extends Menu {
         lore.add("<dark_gray>Integrations:</dark_gray>");
         lore.add(integrationLine("Geyser", integrations.hasGeyser()));
         lore.add(integrationLine("Floodgate", integrations.hasFloodgate()));
-        lore.add(integrationLine("LuckPerms", integrations.hasLuckPerms()));
-        lore.add(integrationLine("Vault", integrations.hasVault()));
-        lore.add(integrationLine("PlaceholderAPI", integrations.hasPlaceholderApi()));
+
 
         return Button.display(ItemBuilder.of(healthy ? Material.LIME_DYE : Material.RED_DYE)
                 .name(healthy

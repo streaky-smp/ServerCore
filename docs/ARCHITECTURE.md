@@ -171,7 +171,7 @@ Re-confirmed against Paper 26.2 with the complete plugin, all thirteen phases in
 |---|---|
 | Plugin enables | `ServerCore enabled (22 services)`, 6 libraries loaded, no warnings |
 | Schema at head | `Database schema up to date (version 8)` |
-| Degrades without integrations | `Not present (features degrade cleanly): Geyser, Floodgate, LuckPerms, Vault, PlaceholderAPI` — the plugin runs identically on a Java-only server |
+| Degrades without integrations | `Not present (features degrade cleanly): Geyser, Floodgate` — the plugin runs identically on a Java-only server |
 | Indexes rebuild at boot | Claim index and player-shop index both repopulated from the database |
 | Rent sweep does real work | A plot seeded overdue moved `OWNED` → `RENT_OVERDUE` with a 48-hour grace window written |
 | Audit log persists | Privileged actions recorded with actor, action and timestamp |
