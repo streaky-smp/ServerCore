@@ -1,0 +1,211 @@
+name: Auto-Triage Issues
+description: AI-powered issue triage - sets Priority and Effort fields
+
+on:
+  issues:
+    types: [opened]
+  workflow_dispatch:
+    inputs:
+      issue_number:
+        description: "Issue number to triage"
+        required: true
+        type: string
+
+permissions:
+  issues: write
+  contents: read
+
+jobs:
+  triage:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Triage Issue
+        uses: actions/github-script@v7
+        with:
+          script: |
+            const issue = context.payload.issue;
+            const labels = issue.labels.map(l => l.name);
+            const isVersionUpdate = labels.includes('Version Update');
+            
+            const title = issue.title;
+            const body = issue.body || '';
+            
+            // Extract user-selected priority/effort from form if present
+            const userPriorityMatch = body.match(/### priority\n\n(.+)/i);
+            const userEffortMatch = body.match(/### effort\n\n(.+)/i);
+            const userPriority = userPriorityMatch ? userPriorityMatch[1].trim() : null;
+            const userEffort = userEffortMatch ? userEffortMatch[1].trim() : null;
+            
+            // Extract reason field for version updates
+            const reasonMatch = body.match(/### reason for update\n\n(.+)/i);
+            const reason = reasonMatch ? reasonMatch[1].trim() : '';
+            
+            // Build prompt for AI
+            const prompt = `You are a triage bot for Minecraft Paper plugin issues. Analyze this issue and return ONLY a JSON object with these fields: priority (Urgent/High/Medium/Low), effort (High/Medium/Low, only for bugs/features), typeLabel (bug/enhancement/question/null, only if not already labeled), explanation (brief 1-2 sentence explanation of your decisions). Issue title: ${title}. Issue body: ${body}. ${isVersionUpdate ? 'Reason for update: ' + reason + '.' : ''} ${userPriority ? 'User suggested priority: ' + userPriority + '.' : ''} ${userEffort ? 'User suggested effort: ' + userEffort + '.' : ''} Is version update: ${isVersionUpdate}. Rules: Urgent for crashes/data loss/security/completely broken. High for major broken features/community events/integral functionality/no workaround. Medium for standard issues with moderate impact. Low for cosmetic/minor/nice-to-have. User input is a hint but you decide independently. Consider context like community servers/events/production use. Return ONLY valid JSON.`;
+            
+            let priority = 'Medium';
+            let effort = 'Low';
+            let typeLabel = null;
+            let usedAI = false;
+            
+            // Try AI with 2 retries
+            for (let attempt = 1; attempt <= 2; attempt++) {
+              try {
+                console.log('AI attempt ' + attempt + '/2');
+                
+                const response = await fetch('https://ollama.com/api/chat', {
+                  method: 'POST',
+                  headers: {
+                    'Content-Type': 'application/json',
+                    'Authorization': 'Bearer ${{ secrets.OLLAMA_API_KEY }}'
+                  },
+                  body: JSON.stringify({
+                    model: 'gpt-oss:120b',
+                    messages: [
+                      { role: 'user', content: prompt }
+                    ],
+                    stream: false
+                  })
+                });
+                
+                if (!response.ok) {
+                  throw new Error('API returned ' + response.status);
+                }
+                
+                const data = await response.json();
+                const content = data.message.content;
+                console.log('AI raw response: ' + content);
+                
+                // Extract JSON from response (handle markdown code blocks)
+                let jsonStr = content;
+                if (content.includes('```')) {
+                  const match = content.match(/```(?:json)?\s*([\s\S]*?)```/);
+                  if (match) jsonStr = match[1];
+                }
+                
+                const result = JSON.parse(jsonStr.trim());
+                
+                // Validate and use results
+                if (['Urgent', 'High', 'Medium', 'Low'].includes(result.priority)) {
+                  priority = result.priority;
+                }
+                if (['High', 'Medium', 'Low'].includes(result.effort)) {
+                  effort = result.effort;
+                }
+                if (['bug', 'enhancement', 'question', null].includes(result.typeLabel)) {
+                  typeLabel = result.typeLabel;
+                }
+                
+                usedAI = true;
+                console.log('AI triage result: priority=' + priority + ', effort=' + effort + ', type=' + typeLabel);
+                console.log('AI explanation: ' + (result.explanation || 'No explanation provided'));
+                
+                // Comment explanation on issue
+                if (result.explanation) {
+                  await github.rest.issues.createComment({
+                    owner: context.repo.owner,
+                    repo: context.repo.repo,
+                    issue_number: context.issue.number,
+                    body: '**AI Triage:** ' + result.explanation
+                  });
+                }
+                break;
+                
+              } catch (error) {
+                console.log('AI attempt ' + attempt + ' failed: ' + error.message);
+                if (attempt < 2) {
+                  // Wait 1 second before retry
+                  await new Promise(r => setTimeout(r, 1000));
+                }
+              }
+            }
+            
+            // Fallback to keywords if AI failed
+            if (!usedAI) {
+              console.log('AI failed, falling back to keyword matching');
+              const contentLower = (title + ' ' + body).toLowerCase();
+              
+              if (isVersionUpdate) {
+                const reasonLower = reason.toLowerCase();
+                if (reasonLower.includes('crash') || reasonLower.includes('security') || reasonLower.includes('critical') || reasonLower.includes('broken') || reasonLower.includes('urgent')) {
+                  priority = 'Urgent';
+                } else if (reasonLower.includes('needed') || reasonLower.includes('required') || reasonLower.includes('must') || reasonLower.includes('production') || reasonLower.includes('event') || reasonLower.includes('integral') || reasonLower.includes('dependent') || reasonLower.includes('network') || reasonLower.includes('community')) {
+                  priority = 'High';
+                } else if (reasonLower.includes('server') || reasonLower.includes('want') || reasonLower.includes('like')) {
+                  priority = 'Medium';
+                } else {
+                  priority = 'Low';
+                }
+              } else {
+                if (contentLower.includes('crash') || contentLower.includes('data loss') || contentLower.includes('security') || contentLower.includes('critical') || contentLower.includes('server crash')) {
+                  priority = 'Urgent';
+                } else if (contentLower.includes('broken') || contentLower.includes('major') || contentLower.includes('urgent') || contentLower.includes('blocking') || contentLower.includes('no workaround') || contentLower.includes('event') || contentLower.includes('integral') || contentLower.includes('dependent')) {
+                  priority = 'High';
+                } else if (contentLower.includes('cosmetic') || contentLower.includes('minor') || contentLower.includes('nice to have') || contentLower.includes('low priority')) {
+                  priority = 'Low';
+                }
+                
+                if (contentLower.includes('feature') || contentLower.includes('implementation') || contentLower.includes('architecture') || contentLower.includes('new feature')) {
+                  effort = 'High';
+                } else if (contentLower.includes('fix') || contentLower.includes('update') || contentLower.includes('change') || contentLower.includes('modify')) {
+                  effort = 'Medium';
+                }
+                
+                if (!labels.includes('bug') && !labels.includes('enhancement') && !labels.includes('question')) {
+                  if (contentLower.includes('bug') || contentLower.includes('error') || contentLower.includes('fail') || contentLower.includes('broken')) {
+                    typeLabel = 'bug';
+                  } else if (contentLower.includes('feature') || contentLower.includes('enhancement') || contentLower.includes('add')) {
+                    typeLabel = 'enhancement';
+                  } else if (contentLower.includes('question') || contentLower.includes('how to') || contentLower.includes('help')) {
+                    typeLabel = 'question';
+                  }
+                }
+              }
+              
+              console.log('Keyword fallback: priority=' + priority + ', effort=' + effort + ', type=' + typeLabel);
+              core.warning('AI triage unavailable - used keyword fallback. Results may need manual review.');
+            }
+            
+            // Add type label if determined (not for version updates)
+            if (typeLabel && !isVersionUpdate) {
+              await github.rest.issues.addLabels({
+                owner: context.repo.owner,
+                repo: context.repo.repo,
+                issue_number: context.issue.number,
+                labels: [typeLabel]
+              });
+              console.log('Added label: ' + typeLabel);
+            }
+            
+            // Set fields via REST API
+            const PRIORITY_FIELD_ID = 46329093;
+            const EFFORT_FIELD_ID = 46329096;
+            
+            try {
+              const fieldValues = [
+                {
+                  field_id: PRIORITY_FIELD_ID,
+                  value: priority
+                }
+              ];
+              
+              // Only set effort for non-version-update issues
+              if (!isVersionUpdate) {
+                fieldValues.push({
+                  field_id: EFFORT_FIELD_ID,
+                  value: effort
+                });
+              }
+              
+              await github.request('POST /repos/{owner}/{repo}/issues/{issue_number}/issue-field-values', {
+                owner: context.repo.owner,
+                repo: context.repo.repo,
+                issue_number: context.issue.number,
+                issue_field_values: fieldValues
+              });
+              
+              console.log('Set priority to ' + priority + (!isVersionUpdate ? ' and effort to ' + effort : ''));
+            } catch (error) {
+              console.log('Could not set issue fields: ' + error.message);
+              console.log('Issue fields may not be enabled for this organization');
+            }
