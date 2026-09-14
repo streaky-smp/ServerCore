@@ -49,6 +49,24 @@ jobs:
           cd plugin
           echo "jar=$(ls *.jar | head -1)" >> $GITHUB_OUTPUT
 
+      - name: Fetch existing release info
+        id: oldrelease
+        run: |
+          release=$(gh release view "${{ github.ref_name }}" --repo "${{ github.repository }}" --json name,body,prerelease 2>/dev/null || true)
+          if [ -n "$release" ]; then
+            echo "name=$(echo "$release" | jq -r '.name')" >> $GITHUB_OUTPUT
+            echo "body<<EOF" >> $GITHUB_OUTPUT
+            echo "$release" | jq -r '.body' >> $GITHUB_OUTPUT
+            echo "EOF" >> $GITHUB_OUTPUT
+            echo "prerelease=$(echo "$release" | jq -r '.prerelease')" >> $GITHUB_OUTPUT
+          else
+            echo "name=Release ${{ github.ref_name }}" >> $GITHUB_OUTPUT
+            echo "body=" >> $GITHUB_OUTPUT
+            echo "prerelease=false" >> $GITHUB_OUTPUT
+          fi
+        env:
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+
       - name: Delete existing release (if any)
         run: |
           gh release delete "${{ github.ref_name }}" --yes --repo "${{ github.repository }}" || true
@@ -59,6 +77,8 @@ jobs:
         uses: softprops/action-gh-release@v3
         with:
           tag_name: ${{ github.ref_name }}
-          name: Release ${{ github.ref_name }}
+          name: ${{ steps.oldrelease.outputs.name }}
+          body: ${{ steps.oldrelease.outputs.body }}
+          prerelease: ${{ steps.oldrelease.outputs.prerelease == 'true' }}
           files: |
             plugin/${{ steps.findjar.outputs.jar }}
