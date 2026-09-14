@@ -75,7 +75,7 @@ jobs:
         uses: softprops/action-gh-release@v3
         with:
           tag_name: ${{ github.event.release.tag_name }}
-          name: com.streakysmp:ServerCore
+          name: com.streakysmp.ServerCore
           body: ${{ github.event.release.body || '' }}
           prerelease: ${{ github.event.release.prerelease || false }}
           generate_release_notes: false
