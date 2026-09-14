@@ -1,6 +1,6 @@
 name: ServerCore
 version: '${version}'
-main: com.servercore.ServerCorePlugin
+main: com.streakysmp.ServerCorePlugin
 api-version: '${apiVersion}'
 description: Modular server framework - economy, shops, claims, auctions, crossplay.
 authors: [ServerCore]
