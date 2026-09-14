@@ -124,8 +124,8 @@ public final class Database implements Service {
                 throw new SQLException("Connection reported invalid immediately after opening");
             }
         }
-        logger.info("Database ready at " + dbFile.getName()
-                + " (WAL, pool=" + hikari.getMaximumPoolSize() + ")");
+        logger.log(Level.FINE, "Database ready at {0} (WAL, pool={1})",
+                new Object[]{dbFile.getName(), hikari.getMaximumPoolSize()});
     }
 
     @Override

@@ -7,6 +7,7 @@ import java.sql.Statement;
 import java.util.ArrayList;
 import java.util.Comparator;
 import java.util.List;
+import java.util.logging.Level;
 import java.util.logging.Logger;
 
 /**
@@ -79,7 +80,8 @@ public final class SchemaMigrator {
     }
 
     private void applyMigration(Migration migration) {
-        logger.info("Applying schema migration " + migration.version() + ": " + migration.description());
+        logger.log(Level.FINE, "Applying schema migration {0}: {1}",
+                new Object[]{migration.version(), migration.description()});
         database.inTransaction(connection -> {
             try (Statement statement = connection.createStatement()) {
                 for (String sql : migration.statements()) {
