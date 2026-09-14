@@ -15,6 +15,29 @@ jobs:
       - name: Checkout repository
         uses: actions/checkout@v6
 
+      - name: Bump version to match tag
+        shell: pwsh
+        run: |
+          $tag = "${{ github.event.release.tag_name }}"
+          $version = $tag -replace '^v', ''
+
+          # Update only the project version in pom.xml (first <version> under <project>)
+          [xml]$pom = Get-Content -Path "pom.xml"
+          $pom.project.version = $version
+          $pom.Save("pom.xml")
+
+          Write-Host "Bumped version to $version"
+
+          # Commit and push
+          git config user.name "github-actions[bot]"
+          git config user.email "41898282+github-actions[bot]@users.noreply.github.com"
+          git add -A
+          git diff --cached --quiet && exit 0
+          git commit -m "Bump version to $version"
+          git push
+        env:
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+
       - name: Set up Java
         uses: actions/setup-java@v5
         with:
