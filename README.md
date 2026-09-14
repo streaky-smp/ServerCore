@@ -89,6 +89,8 @@ All optional. The plugin runs fully without any of them.
 This project follows [Semantic Versioning](https://semver.org/). Tags use the
 format `v1.2.3`. The CI workflow creates a GitHub Release for every tag.
 
+**Tags and releases MUST follow the above versioning or life will breakdown and all hell will be released.**
+
 **When you create a new release, it is automatically deleted, and a new one is created with the built plugin**
 
 ## Docs
